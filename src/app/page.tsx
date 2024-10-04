@@ -1,101 +1,169 @@
-import Image from "next/image";
+"use client";
+
+import { ChangeEvent, useState } from "react";
+import { produtosTypes } from "./types/produtosType";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [list, setList] = useState<produtosTypes[]>([]);
+  const [produtoNome, setProdutoNome] = useState<string>("");
+  const [produtoPreco, setPrdutoPreco] = useState<number>(0);
+  const [produtoQuantidade, setProdutoQuantidade] = useState<number>(0);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  let total = 0;
+  let qtdProdutos = list.length;
+  for (let i in list) {
+    total += list[i].preco * list[i].quantidade;
+    qtdProdutos;
+  }
+  const totalFormatado = new Intl.NumberFormat("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(total);
+
+  const adicionarProduto = () => {
+    if (!produtoNome) return;
+    setList([
+      ...list,
+      {
+        nome: produtoNome,
+        preco: produtoPreco,
+        quantidade: produtoQuantidade,
+        jaPegou: false,
+      },
+    ]);
+    setProdutoNome("");
+    setPrdutoPreco(0);
+    setProdutoQuantidade(0);
+  };
+
+  const editarPreco = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+    const produtoAlterado = [...list];
+    produtoAlterado[index].preco = +e.target.value;
+    setList(produtoAlterado);
+  };
+
+  const editarQuantidade = (
+    e: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const produtoAlterado = [...list];
+    produtoAlterado[index].quantidade = +e.target.value;
+    setList(produtoAlterado);
+  };
+
+  const editarJaPegou = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+    const produtoAlterado = [...list];
+    produtoAlterado[index].jaPegou = !produtoAlterado[index].jaPegou;
+    setList(produtoAlterado);
+  };
+
+  return (
+    <div className="w-screen h-screen bg-white text-black ">
+      <h1 className="text-center p-5 text-5xl uppercase sha">
+        Lista de Compras!
+      </h1>
+
+      <div className="flex flex-row-reverse justify-between items-center">
+        <div className="flex justify-end mr-16">
+          <table className="shadow-2xl rounded-lg text-xl">
+            <tbody>
+              <tr>
+                <td className="px-4 py-2">Quantidade:</td>
+                <td className="px-4 py-2">{qtdProdutos}</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">Total a Pagar:</td>
+                <td className="px-4 py-2">R$ {totalFormatado}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div className="ml-48">
+          <input
+            className="bg-indigo-300 h-9 rounded-lg w-60 border-2 border-black shadow-md text-lg pl-2"
+            type="text"
+            value={produtoNome}
+            onChange={(e) => setProdutoNome(e.target.value)}
+            placeholder="Digite o nome do Produto"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <input
+            className="ml-5 bg-indigo-300 h-9 rounded-lg w-32 border-2 border-black shadow-md text-lg pl-2"
+            type="number"
+            value={produtoPreco}
+            min={0}
+            onChange={(e) => setPrdutoPreco(+e.target.value)}
+            placeholder="Digite o preço"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          <input
+            className="ml-5 bg-indigo-300 h-9 rounded-lg w-32 border-2 border-black shadow-md text-lg pl-2"
+            type="number"
+            min={0}
+            value={produtoQuantidade}
+            onChange={(e) => setProdutoQuantidade(+e.target.value)}
+            placeholder="Digite a quantidade"
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <button
+            onClick={adicionarProduto}
+            className="ml-5 bg-indigo-300 h-9 rounded-lg w-24 border-2 border-black shadow-md text-lg px-2"
+          >
+            Adicionar
+          </button>
+        </div>
+      </div>
+
+      <div className="flex justify-center items-center mt-16 text-left">
+        <table className="rounded-3xl shadow-2xl">
+          <thead>
+            <tr className="uppercase">
+              <th className="py-2 px-5">Produto</th>
+              <th className="py-2 px-5">Preço</th>
+              <th className="py-2 px-5">Quantidade</th>
+              <th className="py-2 px-5">Já pegou?</th>
+              <th className="py-2 px-5">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((produto, index) => (
+              <tr key={index}>
+                <td className="py-2 px-5">{produto.nome}</td>
+                <td className="py-2 px-5">
+                  <input
+                    type="number"
+                    min={0}
+                    value={produto.preco}
+                    onChange={(e) => editarPreco(e, index)}
+                  />
+                </td>
+                <td className="py-2 px-5">
+                  <input
+                    type="number"
+                    min={0}
+                    value={produto.quantidade}
+                    onChange={(e) => editarQuantidade(e, index)}
+                  />
+                </td>
+                <td className="py-2 px-5">
+                  <input
+                    type="checkbox"
+                    checked={produto.jaPegou}
+                    onChange={(e) => editarJaPegou(e, index)}
+                    name=""
+                    id=""
+                  />
+                </td>
+                <td className="py-2 px-5">
+                  R${" "}
+                  {new Intl.NumberFormat("pt-BR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  }).format(produto.preco * produto.quantidade)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
